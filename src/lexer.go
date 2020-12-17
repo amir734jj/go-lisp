@@ -22,7 +22,7 @@ func NewLexer() *LexerConfig {
 }
 
 type Pair struct {
-	key, value string
+	Key, Value string
 }
 
 func (conf *LexerConfig) Add(token Token) *LexerConfig {
@@ -53,13 +53,13 @@ func (conf *LexerConfig) Build() func(text string) []Pair {
 			} else {
 				var longestMatch = Pair{}
 				for k, v := range matches {
-					if len(v) > len(longestMatch.value) {
+					if len(v) > len(longestMatch.Value) {
 						longestMatch = Pair{k, v}
 					}
 				}
 
 				tokens = append(tokens, longestMatch)
-				i += len(longestMatch.value) - 1
+				i += len(longestMatch.Value) - 1
 			}
 		}
 

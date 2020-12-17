@@ -18,13 +18,16 @@ func main() {
 		Add(Token{Name: "R_PRN", Pattern: "^[)]$"}).
 		Add(Token{Name: "L_PRN", Pattern: "^[(]$"}).
 		Add(Token{Name: "ID", Pattern: "^[a-zA-Z]+[\\w]*$"}).
-		Add(Token{Name: "OP", Pattern: "^[-+*/]$"}).
+		Add(Token{Name: "BINARY_OP", Pattern: "^[-+*/]$"}).
+		Add(Token{Name: "LOGICAL_OP", Pattern: "^(<|<=|==|>|>=)$"}).
 		Add(Token{Name: "NUM", Pattern: "^[0-9]+$"}).
 		Add(Token{Name: "WS", Pattern: "^[\\s+]$"}).
 		Add(Token{Name: "DEFUN", Pattern: "^defun$"}).
+		Add(Token{Name: "STRING", Pattern: "^\".*?\"$"}).
+		Add(Token{Name: "COND", Pattern: "^if$"}).
 		Build()(code)
 
 	for _, token := range tokens {
-		fmt.Println(token)
+		fmt.Print(token.Value + " ")
 	}
 }

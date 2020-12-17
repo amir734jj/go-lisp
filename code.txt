@@ -1,1 +1,1 @@
-(defun foo (x) (- x (+ 1 3)))
+(defun foo (x) (if (< (- x (+ 1 3)) 3) "foo" "bar"))
