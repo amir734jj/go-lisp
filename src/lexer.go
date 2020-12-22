@@ -8,6 +8,8 @@ import (
 type Token struct {
 	Name    string
 	Pattern string
+	Value   string
+	Ignore  bool
 }
 
 type LexerConfig struct {
@@ -21,28 +23,25 @@ func NewLexer() *LexerConfig {
 	return &l
 }
 
-type Pair struct {
-	Key, Value string
-}
-
 func (conf *LexerConfig) Add(token Token) *LexerConfig {
 	conf.Tokens = append(conf.Tokens, token)
 	return conf
 }
 
-func (conf *LexerConfig) Build() func(text string) []Pair {
-	return func(text string) []Pair {
+func (conf *LexerConfig) Build() func(text string) []Token {
+	return func(text string) []Token {
 		var buffer string
-		tokens := make([]Pair, 0)
+		tokens := make([]Token, 0)
 		for i := 0; i < len(text); i++ {
 			buffer = ""
-			matches := make(map[string]string)
+			matches := make([]Token, 0)
 			for j := i; j < len(text); j++ {
 				buffer = buffer + string(text[j])
 				for _, token := range conf.Tokens {
 					match, _ := regexp.MatchString(token.Pattern, buffer)
 					if match {
-						matches[token.Name] = buffer
+						token.Value = buffer
+						matches = append(matches, token)
 					}
 				}
 			}
@@ -51,18 +50,34 @@ func (conf *LexerConfig) Build() func(text string) []Pair {
 				_ = fmt.Errorf("failed to find any match: %s", buffer)
 				break
 			} else {
-				var longestMatch = Pair{}
-				for k, v := range matches {
-					if len(v) > len(longestMatch.Value) {
-						longestMatch = Pair{k, v}
+				var currentMatch = Token{}
+				for _, token := range matches {
+					if len(token.Value) > len(currentMatch.Value) {
+						currentMatch = token
+					} else if len(token.Value) == len(currentMatch.Value) {
+						for _, t := range conf.Tokens {
+							if currentMatch.Name == t.Name {
+								break
+							} else if token.Name == t.Name {
+								currentMatch = Token{Name: t.Name, Value: currentMatch.Value, Pattern: t.Pattern, Ignore: t.Ignore}
+								break
+							}
+						}
 					}
 				}
 
-				tokens = append(tokens, longestMatch)
-				i += len(longestMatch.Value) - 1
+				tokens = append(tokens, currentMatch)
+				i += len(currentMatch.Value) - 1
 			}
 		}
 
-		return tokens
+		clones := make([]Token, 0)
+		for _, token := range tokens {
+			if !token.Ignore {
+				clones = append(clones, token)
+			}
+		}
+
+		return clones
 	}
 }
