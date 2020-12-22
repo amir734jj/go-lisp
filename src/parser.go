@@ -1,6 +1,7 @@
 package src
 
 import (
+	"fmt"
 	_ "fmt"
 	"strconv"
 )
@@ -52,7 +53,7 @@ type UnaryOpToken struct {
 }
 
 func ParseNumber(tokens []Token) AST {
-	if len(tokens) == 1 {
+	if len(tokens) == 1 && tokens[0].Name == "NUM" {
 		f, _ := strconv.ParseFloat(tokens[0].Value, 64)
 		return AST(NumberToken{Value: f})
 	} else {
@@ -61,7 +62,7 @@ func ParseNumber(tokens []Token) AST {
 }
 
 func ParseString(tokens []Token) AST {
-	if len(tokens) == 1 {
+	if len(tokens) == 1 && tokens[0].Name == "STRING" {
 		return AST(StringToken{Value: tokens[0].Value})
 	} else {
 		return nil
@@ -69,14 +70,14 @@ func ParseString(tokens []Token) AST {
 }
 
 func ParseFunctionDef(tokens []Token) AST {
-	if tokens[0].Name == "LPRN" && tokens[1].Name == "DEFUN" && tokens[len(tokens)-1].Name == "RPRN" {
+	if len(tokens) >= 7 && tokens[0].Name == "L_PRN" && tokens[1].Name == "DEFUN" && tokens[len(tokens)-1].Name == "R_PRN" {
 		name := tokens[2].Value
 		var formals []string
-		for i, token := range tokens[3:] {
-			if token.Name != "RPRN" {
+		for i, token := range tokens[4:] {
+			if token.Name != "R_PRN" {
 				formals = append(formals, token.Value)
 			} else {
-				tokens = tokens[i+1 : len(tokens)-1]
+				tokens = tokens[4+i+1 : len(tokens)-1]
 				break
 			}
 		}
@@ -87,7 +88,7 @@ func ParseFunctionDef(tokens []Token) AST {
 }
 
 func ParseFunctionCall(tokens []Token) AST {
-	if tokens[0].Name == "LPRN" && tokens[len(tokens)-1].Name == "RPRN" {
+	if len(tokens) >= 3 && tokens[0].Name == "L_PRN" && tokens[1].Name == "ID" && tokens[len(tokens)-1].Name == "R_PRN" {
 		name := tokens[1].Value
 		actuals := ParseMultiple(tokens[2 : len(tokens)-1])
 		return FunctionCallToken{Name: name, Actuals: actuals}
@@ -97,16 +98,18 @@ func ParseFunctionCall(tokens []Token) AST {
 }
 
 func ParseCond(tokens []Token) AST {
-	if tokens[0].Name == "LPRN" && tokens[1].Name == "COND" && tokens[len(tokens)-1].Name == "RPRN" {
+	if len(tokens) >= 6 && tokens[0].Name == "L_PRN" && tokens[1].Name == "COND" && tokens[len(tokens)-1].Name == "R_PRN" {
 		exprs := ParseMultiple(tokens[2 : len(tokens)-1])
-		return CondToken{Condition: exprs[0], If: exprs[1], Else: exprs[2]}
-	} else {
-		return nil
+		if len(exprs) == 3 {
+			return CondToken{Condition: exprs[0], If: exprs[1], Else: exprs[2]}
+		}
 	}
+
+	return nil
 }
 
 func ParseOp(tokens []Token) AST {
-	if tokens[0].Name == "LPRN" && tokens[1].Name == "OP" && tokens[len(tokens)-1].Name == "RPRN" {
+	if len(tokens) >= 4 && tokens[0].Name == "L_PRN" && tokens[1].Name == "OP" && tokens[len(tokens)-1].Name == "R_PRN" {
 		exprs := ParseMultiple(tokens[2 : len(tokens)-1])
 		if len(exprs) == 1 {
 			return UnaryOpToken{Op: tokens[1].Value, Expr1: exprs[0]}
@@ -171,12 +174,16 @@ func ParseMultiple(tokens []Token) []AST {
 		temp := Parse(tokens[i:j])
 		if temp != nil {
 			result = append(result, temp)
-			tokens = tokens[j+1:]
+			tokens = tokens[j:]
 			i = j
 			j = i + 1
 		} else {
 			j++
 		}
+	}
+
+	if result == nil {
+		fmt.Errorf("failed to find any AST: %s", tokens)
 	}
 
 	return result
