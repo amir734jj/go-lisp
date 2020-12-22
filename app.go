@@ -24,7 +24,7 @@ func main() {
 		Add(Token{Name: "OP", Pattern: "^(<|<=|==|>|>=)$"}).
 		Add(Token{Name: "NUM", Pattern: "^[0-9]+$"}).
 		Add(Token{Name: "WS", Pattern: "^[\\s+]$", Ignore: true}).
-		Add(Token{Name: "STRING", Pattern: "^\".*?\"$"}).
+		Add(Token{Name: "STRING", Pattern: "^\"[^\"]+\"$"}).
 		Build()(code)
 
 	for _, token := range tokens {
