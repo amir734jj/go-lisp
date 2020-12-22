@@ -28,7 +28,7 @@ func main() {
 		Build()(code)
 
 	for _, token := range tokens {
-		fmt.Print(token.Value)
+		fmt.Print(token.Value + ":" + token.Name)
 		fmt.Print(" ")
 	}
 

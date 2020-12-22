@@ -31,7 +31,7 @@ func VisitToString(node AST) string {
 			}
 		}
 
-		return "( defun " + functionDefToken.Name + "(" + formalsString + ")" + VisitToString(functionDefToken.Body) + " )"
+		return "( defun " + functionDefToken.Name + "(" + formalsString + ") " + VisitToString(functionDefToken.Body) + " )"
 	case CondToken:
 		condToken := node.(CondToken)
 		return "( if " + VisitToString(condToken.Condition) + " " + VisitToString(condToken.If) + " " + VisitToString(condToken.Else) + " )"
@@ -41,6 +41,8 @@ func VisitToString(node AST) string {
 	case BinaryOpToken:
 		binaryToken := node.(BinaryOpToken)
 		return "( " + binaryToken.Op + " " + VisitToString(binaryToken.Expr1) + " " + VisitToString(binaryToken.Expr2) + " )"
+	case ParameterToken:
+		return node.(ParameterToken).Name
 	}
 
 	return ""

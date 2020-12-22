@@ -49,7 +49,11 @@ type UnaryOpToken struct {
 	AST
 	Op    string
 	Expr1 AST
-	Expr2 AST
+}
+
+type ParameterToken struct {
+	AST
+	Name string
 }
 
 func ParseNumber(tokens []Token) AST {
@@ -81,7 +85,9 @@ func ParseFunctionDef(tokens []Token) AST {
 				break
 			}
 		}
-		return FunctionDefToken{Name: name, Formals: formals, Body: Parse(tokens)}
+
+		re := Parse(tokens)
+		return FunctionDefToken{Name: name, Formals: formals, Body: re}
 	} else {
 		return nil
 	}
@@ -98,8 +104,9 @@ func ParseFunctionCall(tokens []Token) AST {
 }
 
 func ParseCond(tokens []Token) AST {
-	if len(tokens) >= 6 && tokens[0].Name == "L_PRN" && tokens[1].Name == "COND" && tokens[len(tokens)-1].Name == "R_PRN" {
-		exprs := ParseMultiple(tokens[2 : len(tokens)-1])
+	if len(tokens) >= 5 && tokens[0].Name == "L_PRN" && tokens[1].Name == "COND" && tokens[len(tokens)-1].Name == "R_PRN" {
+		tokens = tokens[2 : len(tokens)-1]
+		exprs := ParseMultiple(tokens)
 		if len(exprs) == 3 {
 			return CondToken{Condition: exprs[0], If: exprs[1], Else: exprs[2]}
 		}
@@ -116,6 +123,14 @@ func ParseOp(tokens []Token) AST {
 		} else if len(exprs) == 2 {
 			return BinaryOpToken{Op: tokens[1].Value, Expr1: exprs[0], Expr2: exprs[1]}
 		}
+	}
+
+	return nil
+}
+
+func ParseParameter(tokens []Token) AST {
+	if len(tokens) == 1 && tokens[0].Name == "ID" {
+		return ParameterToken{Name: tokens[0].Value}
 	}
 
 	return nil
@@ -139,6 +154,7 @@ func ParseExpression(tokens []Token) AST {
 	functionDefToken := ParseFunctionDef(tokens)
 	functionCallToken := ParseFunctionCall(tokens)
 	opToken := ParseOp(tokens)
+	parameterToken := ParseParameter(tokens)
 
 	if condToken != nil {
 		return condToken
@@ -148,6 +164,8 @@ func ParseExpression(tokens []Token) AST {
 		return functionCallToken
 	} else if opToken != nil {
 		return opToken
+	} else if parameterToken != nil {
+		return parameterToken
 	} else {
 		return nil
 	}
@@ -168,17 +186,20 @@ func Parse(tokens []Token) AST {
 
 func ParseMultiple(tokens []Token) []AST {
 	i := 0
-	j := i + 1
 	var result []AST
-	for len(tokens) != 0 && j < len(tokens) {
-		temp := Parse(tokens[i:j])
+	for len(tokens) != 0 && i <= len(tokens) {
+		subset := tokens[:i+1]
+		temp := Parse(subset)
 		if temp != nil {
 			result = append(result, temp)
-			tokens = tokens[j:]
-			i = j
-			j = i + 1
+			if i != len(tokens) {
+				tokens = tokens[i+1:]
+				i = 0
+			} else {
+				break
+			}
 		} else {
-			j++
+			i++
 		}
 	}
 
