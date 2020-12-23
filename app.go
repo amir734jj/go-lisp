@@ -20,20 +20,25 @@ func main() {
 		Add(Token{Name: "DEFUN", Pattern: "^defun$"}).
 		Add(Token{Name: "COND", Pattern: "^if$"}).
 		Add(Token{Name: "ID", Pattern: "^[a-zA-Z]+[\\w]*$"}).
-		Add(Token{Name: "OP", Pattern: "^[-+*/]$"}).
+		Add(Token{Name: "OP", Pattern: "^[-+*/!]$"}).
 		Add(Token{Name: "OP", Pattern: "^(<|<=|==|>|>=)$"}).
 		Add(Token{Name: "NUM", Pattern: "^[0-9]+$"}).
 		Add(Token{Name: "WS", Pattern: "^[\\s+]$", Ignore: true}).
+		Add(Token{Name: "NL", Pattern: "^[\\r\\n]$", Ignore: true}).
 		Add(Token{Name: "STRING", Pattern: "^\"[^\"]+\"$"}).
 		Build()(code)
 
 	for _, token := range tokens {
-		fmt.Print(token.Value + ":" + token.Name)
+		fmt.Print(token.Value)
 		fmt.Print(" ")
 	}
 
 	println()
 
-	ast := Parse(tokens)
-	println(VisitToString(ast))
+	asts := ParseMultiple(tokens)
+
+	for _, ast := range asts {
+		println(VisitToString(ast))
+	}
+
 }

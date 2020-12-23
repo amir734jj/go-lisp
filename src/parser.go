@@ -86,11 +86,13 @@ func ParseFunctionDef(tokens []Token) AST {
 			}
 		}
 
-		re := Parse(tokens)
-		return FunctionDefToken{Name: name, Formals: formals, Body: re}
-	} else {
-		return nil
+		body := Parse(tokens)
+		if body != nil {
+			return FunctionDefToken{Name: name, Formals: formals, Body: body}
+		}
 	}
+
+	return nil
 }
 
 func ParseFunctionCall(tokens []Token) AST {
@@ -185,26 +187,37 @@ func Parse(tokens []Token) AST {
 }
 
 func ParseMultiple(tokens []Token) []AST {
-	i := 0
+	i := len(tokens)
 	var result []AST
-	for len(tokens) != 0 && i <= len(tokens) {
-		subset := tokens[:i+1]
+	for len(tokens) > 0 && i >= 0 {
+		subset := tokens[:i]
 		temp := Parse(subset)
 		if temp != nil {
 			result = append(result, temp)
-			if i != len(tokens) {
-				tokens = tokens[i+1:]
-				i = 0
+			if i != 0 {
+				tokens = tokens[i:]
+				i = len(tokens)
 			} else {
+				tokens = []Token{}
 				break
 			}
 		} else {
-			i++
+			i--
 		}
 	}
 
-	if result == nil {
+	// Found an ambiguity, need to backtrack
+	if len(tokens) != 0 {
 		fmt.Errorf("failed to find any AST: %s", tokens)
+
+		fmt.Println()
+		for _, token := range tokens {
+			fmt.Print(token.Value)
+			fmt.Print(" ")
+		}
+
+		fmt.Print()
+		return nil
 	}
 
 	return result
