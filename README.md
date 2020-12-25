@@ -20,3 +20,7 @@ Example
 (fn1 fact)
 (fn2 fact 3)
 ```
+
+Notes:
+
+Thanks to the unambiguous s-expression syntax, top-down parser will successfully pasrer any s-expression, unless we have a syntax error.
