@@ -26,6 +26,7 @@ func main() {
 		Add(Token{Name: "WS", Pattern: "^[\\s+]$", Ignore: true}).
 		Add(Token{Name: "NL", Pattern: "^[\\r\\n]$", Ignore: true}).
 		Add(Token{Name: "STRING", Pattern: "^\"[^\"]+\"$"}).
+		Add(Token{Name: "COMMENT", Pattern: "^--.*$", Ignore: true}).
 		Build()(code)
 
 	for _, token := range tokens {
