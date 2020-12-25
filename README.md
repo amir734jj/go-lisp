@@ -10,7 +10,8 @@ TODO:
 - code generation
 
 Example
-```
+
+```lisp
 (defun fact (x) (if (<= x 0) 1 (* x (fact (- x 1)))))
 (defun fib (x) (if (<= x 0) 0 (if (<= x 1) 1 (+ (fib (- x 1)) (fib (- x 2))))))
 (defun fn1 (l) (l 3))
