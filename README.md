@@ -5,6 +5,7 @@ Toy LIPS (s-expression) lexer and parser in golang
 Features:
 - handwritten greedy LISP lexer
 - handwritten greedy top-down parser combinator
+- simple semantic analyzer
 - JavaScript code generation
 
 TODO:
