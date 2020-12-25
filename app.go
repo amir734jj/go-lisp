@@ -14,7 +14,7 @@ func main() {
 
 	code := string(b)
 
-	tokens := NewLexer().
+	lexer := NewLexer().
 		Add(Token{Name: "R_PRN", Pattern: "^[)]$"}).
 		Add(Token{Name: "L_PRN", Pattern: "^[(]$"}).
 		Add(Token{Name: "DEFUN", Pattern: "^defun$"}).
@@ -27,19 +27,11 @@ func main() {
 		Add(Token{Name: "NL", Pattern: "^[\\r\\n]$", Ignore: true}).
 		Add(Token{Name: "STRING", Pattern: "^\"[^\"]+\"$"}).
 		Add(Token{Name: "COMMENT", Pattern: "^--.*$", Ignore: true}).
-		Build()(code)
+		Build()
 
-	for _, token := range tokens {
-		fmt.Print(token.Value)
-		fmt.Print(" ")
-	}
-
-	println()
-
+	tokens := lexer(code)
 	asts := ParseMultiple(tokens)
-
-	for _, ast := range asts {
-		println(VisitToString(ast))
-	}
-
+	boundedAsts := SemantAnalyze(asts)
+	println("LISP:\n" + ToLispString(asts))
+	println("JavaScript:\n" + JavaScriptCodeGen(boundedAsts))
 }

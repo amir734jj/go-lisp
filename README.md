@@ -5,11 +5,10 @@ Toy LIPS (s-expression) lexer and parser in golang
 Features:
 - handwritten greedy LISP lexer
 - handwritten greedy top-down parser combinator
-
-Note that thanks to the unambiguous s-expression syntax, top-down parser will successfully pasrer any s-expression, unless we have a syntax error.
+- JavaScript code generation
 
 TODO:
-- code generation
+- ~~code generation~~
 
 Example
 

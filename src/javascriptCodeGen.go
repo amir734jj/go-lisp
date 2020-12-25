@@ -2,7 +2,7 @@ package src
 
 import "strconv"
 
-func VisitToLispString(node AST) string {
+func VisitToCodeGen(node AST) string {
 	switch node.(type) {
 	case StringToken:
 		return node.(StringToken).Value
@@ -13,13 +13,13 @@ func VisitToLispString(node AST) string {
 		actualsString := ""
 		for i, actual := range functionCallToken.Actuals {
 			if i == 0 {
-				actualsString += VisitToLispString(actual)
+				actualsString += VisitToCodeGen(actual)
 			} else {
-				actualsString += " " + VisitToLispString(actual)
+				actualsString += ", " + VisitToCodeGen(actual)
 			}
 		}
 
-		return "(" + functionCallToken.Name + " " + actualsString + ")"
+		return functionCallToken.Name + "(" + actualsString + ")"
 	case FunctionDefToken:
 		functionDefToken := node.(FunctionDefToken)
 		formalsString := ""
@@ -31,16 +31,16 @@ func VisitToLispString(node AST) string {
 			}
 		}
 
-		return "( defun " + functionDefToken.Name + "(" + formalsString + ") " + VisitToLispString(functionDefToken.Body) + " )"
+		return "function " + functionDefToken.Name + " ( " + formalsString + ") {\n\treturn " + VisitToCodeGen(functionDefToken.Body) + ";\n)"
 	case CondToken:
 		condToken := node.(CondToken)
-		return "( if " + VisitToLispString(condToken.Condition) + " " + VisitToLispString(condToken.If) + " " + VisitToLispString(condToken.Else) + " )"
+		return VisitToCodeGen(condToken.Condition) + " ? " + VisitToCodeGen(condToken.If) + " : " + VisitToCodeGen(condToken.Else)
 	case UnaryOpToken:
 		unaryToken := node.(UnaryOpToken)
-		return "( " + unaryToken.Op + " " + VisitToLispString(unaryToken.Expr1) + " )"
+		return "( " + unaryToken.Op + " " + VisitToCodeGen(unaryToken.Expr1) + " )"
 	case BinaryOpToken:
 		binaryToken := node.(BinaryOpToken)
-		return "( " + binaryToken.Op + " " + VisitToLispString(binaryToken.Expr1) + " " + VisitToLispString(binaryToken.Expr2) + " )"
+		return "(" + VisitToCodeGen(binaryToken.Expr1) + " " + binaryToken.Op + " " + VisitToCodeGen(binaryToken.Expr2) + " )"
 	case ParameterToken:
 		return node.(ParameterToken).Name
 	}
@@ -48,10 +48,10 @@ func VisitToLispString(node AST) string {
 	return ""
 }
 
-func ToLispString(ast []AST) string {
+func JavaScriptCodeGen(boundedAsts []BoundedAst) string {
 	result := ""
-	for _, ast := range ast {
-		result += VisitToLispString(ast) + "\n"
+	for _, ast := range boundedAsts {
+		result += VisitToCodeGen(ast.AST) + "\n"
 	}
 
 	return result
