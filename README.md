@@ -1,5 +1,6 @@
 # go-lisp
-Playground for writing some golang
+
+Toy LIPS (s-expression) lexer and parser in golang
 
 Features:
 - handwritten greedy LISP lexer
