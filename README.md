@@ -21,6 +21,25 @@ Example
 (fn2 fact 3)
 ```
 
+JavaScript
+```javascript
+function fact (x) {
+    return (x <= 0.000000 ) ? 1.000000 : (x * fact((x - 1.000000 )) );
+}
+function fib (x) {
+    return (x <= 0.000000 ) ? 0.000000 : (x <= 1.000000 ) ? 1.000000 : (fib((x - 1.000000 )) + fib((x - 2.000000 )) );
+}
+function fn1 (l) {
+    return l(3.000000);
+}
+function fn2 (l, x) {
+    return l(x);
+}
+fn1(fact)
+fn2(fact, 3.000000)
+
+```
+
 Notes:
 
 Thanks to the unambiguous s-expression syntax, top-down parser will successfully pasrer any s-expression, unless we have a syntax error.

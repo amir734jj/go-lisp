@@ -27,11 +27,11 @@ func VisitToCodeGen(node AST) string {
 			if i == 0 {
 				formalsString += formal
 			} else {
-				formalsString += " " + formal
+				formalsString += ", " + formal
 			}
 		}
 
-		return "function " + functionDefToken.Name + " ( " + formalsString + ") {\n\treturn " + VisitToCodeGen(functionDefToken.Body) + ";\n)"
+		return "function " + functionDefToken.Name + " (" + formalsString + ") {\n\treturn " + VisitToCodeGen(functionDefToken.Body) + ";\n}"
 	case CondToken:
 		condToken := node.(CondToken)
 		return VisitToCodeGen(condToken.Condition) + " ? " + VisitToCodeGen(condToken.If) + " : " + VisitToCodeGen(condToken.Else)
