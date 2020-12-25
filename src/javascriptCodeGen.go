@@ -40,7 +40,7 @@ func VisitToCodeGen(node AST) string {
 		return "( " + unaryToken.Op + " " + VisitToCodeGen(unaryToken.Expr1) + " )"
 	case BinaryOpToken:
 		binaryToken := node.(BinaryOpToken)
-		return "(" + VisitToCodeGen(binaryToken.Expr1) + " " + binaryToken.Op + " " + VisitToCodeGen(binaryToken.Expr2) + " )"
+		return "(" + VisitToCodeGen(binaryToken.Expr1) + " " + binaryToken.Op + " " + VisitToCodeGen(binaryToken.Expr2) + ")"
 	case ParameterToken:
 		return node.(ParameterToken).Name
 	}
