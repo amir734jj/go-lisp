@@ -19,7 +19,7 @@ func VisitToString(node AST) string {
 			}
 		}
 
-		return "(" + functionCallToken.Name + actualsString + ")"
+		return "(" + functionCallToken.Name + " " + actualsString + ")"
 	case FunctionDefToken:
 		functionDefToken := node.(FunctionDefToken)
 		formalsString := ""

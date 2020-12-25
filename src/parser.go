@@ -1,7 +1,6 @@
 package src
 
 import (
-	"fmt"
 	_ "fmt"
 	"strconv"
 )
@@ -81,8 +80,12 @@ func ParseFunctionDef(tokens []Token) AST {
 			if token.Name != "R_PRN" {
 				formals = append(formals, token.Value)
 			} else {
-				tokens = tokens[4+i+1 : len(tokens)-1]
-				break
+				if 4+i+1 > len(tokens)-1 {
+					return nil
+				} else {
+					tokens = tokens[4+i+1 : len(tokens)-1]
+					break
+				}
 			}
 		}
 
@@ -99,6 +102,9 @@ func ParseFunctionCall(tokens []Token) AST {
 	if len(tokens) >= 3 && tokens[0].Name == "L_PRN" && tokens[1].Name == "ID" && tokens[len(tokens)-1].Name == "R_PRN" {
 		name := tokens[1].Value
 		actuals := ParseMultiple(tokens[2 : len(tokens)-1])
+		if actuals == nil {
+			return nil
+		}
 		return FunctionCallToken{Name: name, Actuals: actuals}
 	} else {
 		return nil
@@ -208,15 +214,6 @@ func ParseMultiple(tokens []Token) []AST {
 
 	// Found an ambiguity, need to backtrack
 	if len(tokens) != 0 {
-		fmt.Errorf("failed to find any AST: %s", tokens)
-
-		fmt.Println()
-		for _, token := range tokens {
-			fmt.Print(token.Value)
-			fmt.Print(" ")
-		}
-
-		fmt.Print()
 		return nil
 	}
 
