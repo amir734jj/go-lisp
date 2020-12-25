@@ -6,8 +6,6 @@ Features:
 - handwritten greedy LISP lexer
 - handwritten greedy top-down parser combinator
 
-Note that thanks to the unambiguous s-expression syntax, top-down parser will successfully pasrer any s-expression, unless we have a syntax error.
-
 TODO:
 - code generation
 
@@ -21,3 +19,7 @@ Example
 (fn1 fact)
 (fn2 fact 3)
 ```
+
+Notes:
+
+Thanks to the unambiguous s-expression syntax, top-down parser will successfully pasrer any s-expression, unless we have a syntax error.
