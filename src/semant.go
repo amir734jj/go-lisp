@@ -44,8 +44,8 @@ func VisitSemant(node AST, contour *Contour) *BoundedAst {
 		functionDefBoundedAst := contour.searchContour(functionCallToken.Name)
 		functionCallBondedAst := BoundedAst{AST: functionCallToken, Binding: functionDefBoundedAst}
 
-		if functionDefBoundedAst.Binding != nil && len(functionDefBoundedAst.Binding.AST.(FunctionDefToken).Formals) != len(functionCallToken.Actuals) {
-			println("Count of actuals and formals are different")
+		if functionDefBoundedAst != nil && len(functionDefBoundedAst.AST.(FunctionDefToken).Formals) != len(functionCallToken.Actuals) {
+			println("Count of actuals and formals are different!")
 		}
 
 		for _, actual := range functionCallToken.Actuals {

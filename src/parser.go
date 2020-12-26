@@ -112,7 +112,7 @@ func ParseFunctionCall(tokens []Token) AST {
 }
 
 func ParseCond(tokens []Token) AST {
-	if len(tokens) >= 5 && tokens[0].Name == "L_PRN" && tokens[1].Name == "COND" && tokens[len(tokens)-1].Name == "R_PRN" {
+	if len(tokens) >= 6 && tokens[0].Name == "L_PRN" && tokens[1].Name == "COND" && tokens[len(tokens)-1].Name == "R_PRN" {
 		tokens = tokens[2 : len(tokens)-1]
 		exprs := ParseMultiple(tokens)
 		if len(exprs) == 3 {
